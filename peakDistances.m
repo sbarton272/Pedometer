@@ -39,7 +39,7 @@ bpData = filter(b,1,data);
 [maxPeaks, maxLocations] = findpeaks(bpData);
 
 % Find min peaks
-[minPeaks, minLocations] = findpeaks(-bpData);
+[minPeaks, minLocations] = findpeaks(-bpData)
 
 %% Find peak height/time distances
 % Find max-min pair distances

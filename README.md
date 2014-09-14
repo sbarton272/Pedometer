@@ -19,3 +19,9 @@ Ideas
 Algorithms
 ==========
 
+1. BP -> Threshold
+- This may be the best as it is simple and could generalize
+- band pass filter and then apply a threshold to catch the max peaks
+2. Peak distance
+- I noticed that the basic step has a min peak followed by a max peak.
+- These peaks have bounded spacing and distance
