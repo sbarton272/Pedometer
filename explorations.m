@@ -101,5 +101,75 @@ subplot(3,1,3); plot(w, freqBpData); title('Freq');
 xlabel('rad/pi'); ylabel('mag');
 
 
+%% Peak detection with band pass filtered data
+%
+% 1Hz - min distance
+
+b = fir1(32, [.1 .3]);
+bpData = filter(b,1,gravNormData);
+
+% Find max peaks
+minPeakDist = floor(.67 * Fs / 2); % half of estimated step time distance
+[maxPeaks, maxLocations] = findpeaks(bpData, 'MINPEAKHEIGHT', .05, ...
+    'MINPEAKDISTANCE', minPeakDist);
+
+% Find min peaks
+[minPeaks, minLocations] = findpeaks(-bpData, 'MINPEAKHEIGHT', .05, ...
+    'MINPEAKDISTANCE', minPeakDist);
+
+% Find max-min pair distances
+len = min(length(maxPeaks), length(minPeaks));
+peakDist = maxPeaks(1:len) + minPeaks(1:len)
+figure; stem(maxLocations(1:len), peakDist);
+
+figure; plot(time, bpData); 
+hold on
+plot(time(maxLocations), maxPeaks, 'ro');
+plot(time(minLocations), -minPeaks, 'go');
+title('Band pass peaks data');
+xlabel('sec'); ylabel('mag');
+
+
+%% Calculate threshold for basic threshold algorithm
+% Find known step locations and find average height
+
+b = fir1(16, .3, 'low');
+lpData = filter(b,1,gravNormData);
+
+% Find all potential step peaks
+minPeakDist = floor(.67 * Fs / 2); % half of estimated step time distance
+[maxPeaks, maxLocations] = findpeaks(lpData, 'MINPEAKHEIGHT', .07, ...
+    'MINPEAKDISTANCE', minPeakDist);
+
+% capture 97.5% of peaks (assuming normally distributed)
+threshold = mean(maxPeaks) - 2*std(maxPeaks);
+
+figure; plot(time, lpData); 
+hold on
+plot(time(maxLocations), maxPeaks, 'ro');
+plot(time, threshold*ones(size(time)), 'g');
+title(['Low pass peaks data with threshold ', num2str(threshold)]);
+xlabel('sec'); ylabel('mag');
+
+%% Calculate threshold for basic threshold algorithm
+% Find known step locations and find average height
+
+b = fir1(16, [.1 .3]);
+bpData = filter(b,1,gravNormData);
+
+% Find all potential step peaks
+minPeakDist = floor(.67 * Fs / 2) % half of estimated step time distance
+[maxPeaks, maxLocations] = findpeaks(bpData, 'MINPEAKHEIGHT', .07, ...
+    'MINPEAKDISTANCE', minPeakDist);
+
+% capture 97.5% of peaks (assuming normally distributed)
+threshold = mean(maxPeaks) - 2*std(maxPeaks);
+
+figure; plot(time, bpData); 
+hold on
+plot(time(maxLocations), maxPeaks, 'ro');
+plot(time, threshold*ones(size(time)), 'g');
+title(['Band pass peaks data with threshold ', num2str(threshold)]);
+xlabel('sec'); ylabel('mag');
 
 
