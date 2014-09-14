@@ -4,27 +4,32 @@ import csv
 
 def findPeakDist(data):
 
-	N = 1; # num of terms to look at on either side of value
+	N = 2; # num of terms to look at on either side of value
 	minInd = -1 # -1 signals not seen
 	maxInd = -1
 	T = .01
+	tMin = 3
+	tMax = 10
+	hMin = .3
 
 	# Iter through looking for min, max pair
+	priorPeak = False
+	stepCount = 0
 	for i in xrange(N, len(data) - N):
 
-		# Find min by comparing to surounding few values
-		if (data[i] < data[i-N]) and (data[i] < data[i+N]):
-			minInd = i;
 
-		if (minInd != -1) and (data[i] > data[i-N]) and (data[i] > data[i+N]):
-			maxInd = i
+		# look at a moving window of 5
+		# TODO play with window 4 vs 5
 
-			# Determine if this is a valid pair, values calculated from matlab
-			timeDif = (maxInd - minInd)
-			heightDif = (data[maxInd] - data[minInd]) 
-			if (3 <= timeDif) and (timeDif <= 10) and (heightDif > .3):
-				print minInd, maxInd
+		if ((max(data[i:i+N]) - min(data[i-N:i])) > hMin):
+			if (not priorPeak):
+				print i
+				stepCount += 1
+			priorPeak = True
+		else:
+			priorPeak = False
 
+	print "STEPS FOUND: ", stepCount
 
 data = []
 with open('filteredData.csv', 'r') as csvfile:
