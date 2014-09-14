@@ -102,25 +102,32 @@ xlabel('rad/pi'); ylabel('mag');
 
 
 %% Peak detection with band pass filtered data
-%
-% 1Hz - min distance
+% Step starts with upward motion so this will appear as neg accel in data
+% Want to look at pair distance for min followed by max
+% There is a huge difference between distances
 
 b = fir1(32, [.1 .3]);
 bpData = filter(b,1,gravNormData);
 
 % Find max peaks
 minPeakDist = floor(.67 * Fs / 2); % half of estimated step time distance
-[maxPeaks, maxLocations] = findpeaks(bpData, 'MINPEAKHEIGHT', .05, ...
+[maxPeaks, maxLocations] = findpeaks(bpData, 'MINPEAKHEIGHT', 0, ...
     'MINPEAKDISTANCE', minPeakDist);
 
 % Find min peaks
-[minPeaks, minLocations] = findpeaks(-bpData, 'MINPEAKHEIGHT', .05, ...
+[minPeaks, minLocations] = findpeaks(-bpData, 'MINPEAKHEIGHT', 0, ...
     'MINPEAKDISTANCE', minPeakDist);
 
 % Find max-min pair distances
 len = min(length(maxPeaks), length(minPeaks));
-peakDist = maxPeaks(1:len) + minPeaks(1:len)
-figure; stem(maxLocations(1:len), peakDist);
+peakDist = maxPeaks(1:len) + minPeaks(1:len);
+
+% Plot peak distance
+figure; subplot(2,1,1);
+stem(maxLocations(1:len), peakDist);
+title('min-max peak pair distance'); xlabel('sec');
+subplot(2,1,2);
+hist(peakDist); title('step peak dists, note seperation in distributions'); 
 
 figure; plot(time, bpData); 
 hold on
@@ -158,7 +165,7 @@ b = fir1(16, [.1 .3]);
 bpData = filter(b,1,gravNormData);
 
 % Find all potential step peaks
-minPeakDist = floor(.67 * Fs / 2) % half of estimated step time distance
+minPeakDist = floor(.67 * Fs / 2); % half of estimated step time distance
 [maxPeaks, maxLocations] = findpeaks(bpData, 'MINPEAKHEIGHT', .07, ...
     'MINPEAKDISTANCE', minPeakDist);
 
