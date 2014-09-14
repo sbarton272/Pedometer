@@ -86,7 +86,7 @@ hist(peakDist); title('step peak dists, note seperation in distributions');
 
 % plot peak distances
 figure;
-hist(locDist); title('Time distance in peak pairs');
+hist(locDist); title('Time distance in peak pairs (between min and max)');
 
 % Plot time data with min/max marked
 figure; plot(time, bpData); 

@@ -4,7 +4,7 @@ import csv
 
 def findPeakDist(data):
 
-	N = 2; # num of terms to look at on either side of value
+	N = 5; # num of terms to look at on either side of value
 	minInd = -1 # -1 signals not seen
 	maxInd = -1
 	T = .01
@@ -16,10 +16,6 @@ def findPeakDist(data):
 	priorPeak = False
 	stepCount = 0
 	for i in xrange(N, len(data) - N):
-
-
-		# look at a moving window of 5
-		# TODO play with window 4 vs 5
 
 		if ((max(data[i:i+N]) - min(data[i-N:i])) > hMin):
 			if (not priorPeak):
