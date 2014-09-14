@@ -56,7 +56,7 @@ xlabel('rad/pi'); ylabel('mag');
 
 %% LPF
 
-b = fir1(16, .2, 'low');
+b = fir1(16, .4, 'low');
 lpData = filter(b,1,gravNormData);
 
 figure; plot(time, lpData); 
@@ -67,6 +67,7 @@ xlabel('sec'); ylabel('mag');
 %% Spectrogram alongside time plot
 % insight into important frequencies?
 % Know about 20 steps in about 15 sec (2s-17s) -> about .67 sec per step
+% Freq about 1.5 Hz
 
 stepTime = .67;
 windowSize = floor(stepTime*Fs);
@@ -83,7 +84,7 @@ spectrogram(gravNormData, window, nOverlap, nFft, Fs, 'yaxis');
 % About 1.9 step/sec (women) or 1.7 step/sec (men)
 % Since sampled at 20Hz, -> looking for about 1.7 - 1.9 Hz
 
-b = fir1(64, [.15, .2]);
+b = fir1(64, [.1, .2]);
 bpData = filter(b,1,gravNormData);
 
 nFft = 1024; % padding
