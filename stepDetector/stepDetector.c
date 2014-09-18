@@ -124,7 +124,7 @@ uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
   return stepCount;
 }
 
-fixed_t min(fixed_t* nums, uint16_t len) {
+fixed_t min(fixed_t nums[], uint16_t len) {
 
   // Iter through to find min
   uint16_t i;
@@ -137,7 +137,7 @@ fixed_t min(fixed_t* nums, uint16_t len) {
   return min;
 }
 
-fixed_t max(fixed_t* nums, uint16_t len) {
+fixed_t max(fixed_t nums[], uint16_t len) {
  
   // Iter through to find max
   uint16_t i;

@@ -13,11 +13,16 @@
  *==================================*/
 
 fixed_t fixedMult(fixed_t a, fixed_t b) {
-	return 0;
+	
+  // Cast up to larger size as mult may overflow before normalized
+  long_fixed_t prod = ((long_fixed_t)a) * ((long_fixed_t)b);
+  
+  // Casting back will truncate so data loss is possible 
+  return (fixed_t)((a * b) >> FIXED_PT_LOC);
 }
 
 fixed_t fixedAdd(fixed_t a, fixed_t b) {
-	return 0;
+	return a + b;
 }
 
 fixed_t fixedPtFromInt(int32_t decimal, int16_t offset) {
@@ -28,3 +33,4 @@ fixed_t fixedPtFromInt(int32_t decimal, int16_t offset) {
  * Private
  *==================================*/
 
+                         
