@@ -4,7 +4,11 @@ import csv
 
 def findPeakDist(data):
 
-	N = 5; # num of terms to look at on either side of value
+	# 3Hz is fastest -> peaks no closer than 1/3 sec
+	# 1/3 sec, @ 20Hz sampling rate -> 6-7 samples is closest
+	# distance between peaks
+
+	N = 6; # num of terms to look at on either side of value
 	minInd = -1 # -1 signals not seen
 	maxInd = -1
 	T = .01

@@ -25,19 +25,43 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-
 #include "fixedPt.h"
 
 /*==================================
  * Macros
  *==================================*/
 
-#define BPF_LEN (33)
+/*
+ * Calculated from matlab.
+ */ 
+#define BPF_LEN 33
+
+/*
+ * This constant is calculated based on the bandpass filter.
+ * The bandpass filter allows 3Hz maximum so peaks are no closer
+ * than .33 sec. Since Fs = 20Hz this is 6.67 samples. As long 
+ * as I search for a max/min in a window less than 6.67 I am 
+ * guaranteed not to find 2 of the same extreema.
+ */
+#define STEP_WINDOW_SIZE 5
+
+/*
+ * This value (0.3) was calculated in matlab. It was the best seperator
+ * between step min-max differences and min-max pairs not due to steps.
+ */
+#define MIN_MAX_THRESHOLD 614
 
 /*==================================
  * Constants
  *==================================*/
 
+/*
+ * Coefficients calculated in matlab for an FIR filter with
+ *  a passband between 1Hz and 3Hz. Steps are expected to fall
+ *  at around 1.5Hz. People walk about 1.3 m/s or .67/.76 m step 
+ *  size (women/men). This means that steps occur at frequencies
+ *  at about 1.9Hz (women) or 1.7Hz (men).
+ */
 extern const fixed_t bandpassFilterCoef[BPF_LEN];
 
 /*==================================

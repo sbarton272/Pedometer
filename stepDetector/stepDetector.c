@@ -28,12 +28,17 @@ uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen) {
   uint16_t i;
   for (i = 0; i < dataLen; i++) {
 
-    // Norm is simply sum of squares
+    // Norm is simply sum of squares, do not take sqrt for precision purposes
     normData[i] = sumSqrs(data[i]);
   }
 
-  // Filter data with band pass filter
+  // Filter data with band pass filter, note modifies normData
   bandpassFilter(normData, dataLen);
+
+  // TODO remove this test
+  for (i = 0; i < dataLen; i++) {
+    printf("%d\n", normData[i]);
+  }
 
   // Count and return steps
   uint16_t nSteps = countSteps(normData, dataLen);
@@ -61,19 +66,86 @@ void bandpassFilter(fixed_t data[], uint16_t dataLen) {
   // Keep track of buffer index which rotates through buffer
   uint16_t bufIndex = 0;
 
-  // TODO make loop and multiply
+  // Iterate through all terms
+  uint16_t i, j;
+  for (i = 0; i < dataLen; i++) {
 
-  return;
+    // Place cur term in buf at most recent pos
+    bufIndex = i % BPF_LEN;
+    pastBuf[bufIndex] = data[i];
+
+    // Perform filter convolution on current buffer
+    fixed_t filteredValue = 0;
+    uint16_t k;
+    for (j = 0; j < BPF_LEN; j++) {
+
+      /*
+       * The bufIndex is the starting point. The pastBuf has
+       * values added to the right, so iterate left from the starting
+       * point to iterate through successively older values
+       */
+      k = (bufIndex - j) % BPF_LEN;
+
+      // BPF coefficients are ordered new to old
+      filteredValue += fixedMult(pastBuf[k], bandpassFilterCoef[j]);
+    }
+
+    // Update data
+    data[i] = filteredValue;
+  }
 }
 
 uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
-	return 0;
+	
+  // Iterate through data over time looking for min followed by max
+  // Look for max/min within a window
+  uint16_t i;
+  fixed_t min, max;
+  bool priorPeak = false;
+  uint16_t stepCount = 0;
+  for (i = STEP_WINDOW_SIZE; i < (dataLen - STEP_WINDOW_SIZE); i++) {
+
+    // Search for min in window before cur index and max in following window
+    min = min(&data[i - STEP_WINDOW_SIZE], STEP_WINDOW_SIZE);
+    max = max(&data[i], STEP_WINDOW_SIZE);
+
+    // If difference in min followed by max peak is large enough this is a step
+    if ((max - min) > MIN_MAX_THRESHOLD) {
+      if (!priorPeak) {
+        // TODO remove debug print
+        printf("Peak at %d\n", i);
+        stepCount++;
+      }
+      priorPeak = true;
+    } else {
+      priorPeak = false;
+    }
+  }
+  return stepCount;
 }
 
-fixed_t min(fixed_t nums[], uint16_t len) {
-	return 0;
+fixed_t min(fixed_t* nums, uint16_t len) {
+
+  // Iter through to find min
+  uint16_t i;
+  fixed_t min = *nums;
+  for (i = 0; i < len; i++) {
+    if (nums[i] <= min) {
+      min = nums[i];
+    }
+  }
+  return min;
 }
 
-fixed_t max(fixed_t nums[], uint16_t len) {
-	return 0;
+fixed_t max(fixed_t* nums, uint16_t len) {
+ 
+  // Iter through to find max
+  uint16_t i;
+  fixed_t max = *nums;
+  for (i = 0; i < len; i++) {
+    if (nums[i] >= max) {
+      max = nums[i];
+    }
+  }
+  return max;
 }

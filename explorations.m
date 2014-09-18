@@ -66,8 +66,8 @@ xlabel('sec'); ylabel('mag');
 
 %% Spectrogram alongside time plot
 % insight into important frequencies?
-% Know about 20 steps in about 15 sec (2s-17s) -> about .67 sec per step
-% Freq about 1.5 Hz
+% Know about 20 steps in about 15 sec (2s-17s) -> about .75 sec per step
+% Freq about 1.33 Hz
 
 stepTime = .67;
 windowSize = floor(stepTime*Fs);
