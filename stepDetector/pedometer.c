@@ -44,6 +44,9 @@ int main(int argc, char *argv[]) {
   // Parse out data into data object
   parseXyzData(dataFp, data, nSamples);
 
+  // Get number of steps
+  uint16_t nSteps = stepDetector(data, nSamples);
+
   // Close file
   fclose(dataFp);
 
@@ -80,15 +83,18 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
     tok = strsep(&parse, ",");
     data[linesRead].z = parseValue(tok);
 
-    printf("%d, %d, %d\n", data[linesRead].x, data[linesRead].y, data[linesRead].z);
-
     linesRead++;
+
+    printf("Read(%d) %d, %d, %d\n", linesRead, data[linesRead].x, data[linesRead].y, data[linesRead].z);
+
   }
 
   if (feof(fp)) {
+
     // Hit end of file
     return;
   } else {
+    
     // Error
     printf("Error parsing data\n");
   }
@@ -99,13 +105,11 @@ fixed_t parseValue(char* tok) {
   // Check if negative
   bool isNeg = false;
   char c = *tok; // Parsing char
-  printf("Token %s\n", tok);
   if (c == '-') {
 
     // If negative sign present move to look at next char
     isNeg = true;
     tok++;
-    printf("Token w/o minus %s\n", tok);
   }
 
   // Form integer by extracting digits and mult cumulative
@@ -123,7 +127,6 @@ fixed_t parseValue(char* tok) {
     tok++;
   
     if (c == '.') {
-      printf("Decimal place\n");
 
       // If decimal place keep track that now parsing past the decimal
       isDecimalPassed = true;
@@ -137,9 +140,6 @@ fixed_t parseValue(char* tok) {
     if (isDecimalPassed) {
       decimalPlacesPassed++;
     }
-  
-    printf("%c: %d, %d\n", c, decimalPlacesPassed, sum);
-
   }
 
   // Convert to negative if necessary
@@ -149,5 +149,4 @@ fixed_t parseValue(char* tok) {
 
   // Convert sum to fixed point
   return fixedPtFromInt(sum, INPUT_SCALAR);
-
 }
