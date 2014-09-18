@@ -65,14 +65,23 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
   // Read line by line and parse x, y, z values
   // Assume there is no first line header
   // NOTE I removed the header in my data file
-
-  int linesRead = 0;
+  int16_t linesRead = 0;
   while ((fscanf(fp, "%s", buf) == 1) &&
          (linesRead < nSamples)) {
+
+    // Parse x,y,z
+    // Extract double but convert to integer representation
+    // TODO will crash if not 3 values
     parse = buf;
-    while ((tok = strsep(&parse, ",")) != NULL) {
-      printf("%d:%s\n", linesRead, tok);
-    }
+    tok = strsep(&parse, ",");
+    data[linesRead].x = parseValue(tok);
+    tok = strsep(&parse, ",");
+    data[linesRead].y = parseValue(tok);
+    tok = strsep(&parse, ",");
+    data[linesRead].z = parseValue(tok);
+
+    printf("%d, %d, %d\n", data[linesRead].x, data[linesRead].y, data[linesRead].z);
+
     linesRead++;
   }
 
@@ -85,3 +94,60 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
   }
 }
 
+fixed_t parseValue(char* tok) {
+
+  // Check if negative
+  bool isNeg = false;
+  char c = *tok; // Parsing char
+  printf("Token %s\n", tok);
+  if (c == '-') {
+
+    // If negative sign present move to look at next char
+    isNeg = true;
+    tok++;
+    printf("Token w/o minus %s\n", tok);
+  }
+
+  // Form integer by extracting digits and mult cumulative
+  //  sum by 10. Only extract a few places past decimal.
+  bool isDecimalPassed = false;
+  int16_t decimalPlacesPassed = 0;
+  int32_t sum = 0;
+
+  // Iterate until read given number of digits past decimal place
+  while ( (decimalPlacesPassed <= DECIMAL_PRECISION) &&
+          (c != '\n')) {
+    
+    // Get char and move to ptr to next char
+    c = *tok;
+    tok++;
+  
+    if (c == '.') {
+      printf("Decimal place\n");
+
+      // If decimal place keep track that now parsing past the decimal
+      isDecimalPassed = true;
+    } else {
+
+      // Add current number at the ones place
+      sum = (10 * sum) + CHR_TO_INT(c);
+    }
+
+    // If past the decimal place keep track of how far
+    if (isDecimalPassed) {
+      decimalPlacesPassed++;
+    }
+  
+    printf("%c: %d, %d\n", c, decimalPlacesPassed, sum);
+
+  }
+
+  // Convert to negative if necessary
+  if (isNeg) {
+    sum = -sum;
+  }
+
+  // Convert sum to fixed point
+  return fixedPtFromInt(sum, INPUT_SCALAR);
+
+}

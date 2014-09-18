@@ -35,6 +35,14 @@ fixed_t fixedMult(fixed_t a, fixed_t b);
 
 fixed_t fixedAdd(fixed_t a, fixed_t b);
 
+/*
+ * Convert the decimal number which has the given decimal offset
+ *  to a fixed pt definition.
+ * Ex) 1.0034 comes into the system. It is parsed to 10034. Therefore
+ *     decimal = 10034 and offset = 10000.
+ */
+fixed_t fixedPtFromInt(int32_t decimal, int16_t offset);
+
 /*==================================
  * Private
  *==================================*/
