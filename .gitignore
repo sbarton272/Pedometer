@@ -30,3 +30,6 @@
 
 # Matlab files
 *.asv
+
+#Sublime files
+*.json

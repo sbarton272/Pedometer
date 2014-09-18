@@ -14,8 +14,10 @@ data = csvread(FILENAME); % x,y,z
 nSamples = size(data,1);
 time = linspace(0, nSamples / Fs, nSamples);
 
-% Normalize
-data = sqrt(sum(data.^2, 2)) - 1;
+figure; plot(time, data);
+
+% Normalize - note no sqrt because won't have that in final implentation
+data = sum(data.^2, 2) - 1;
 
 
 %% Peak detection with band pass filtered data
@@ -31,8 +33,22 @@ data = sqrt(sum(data.^2, 2)) - 1;
 % step dynamics.
 
 %% Filter
-b = fir1(32, [.1 .3]);
-bpData = filter(b,1,data);
+b = [0.00244140625, 0.00390625, 0.00390625, 0.001953125, -0.001953125, -0.00439453125, 0.0, 0.00830078125, 0.0078125, -0.0146484375, -0.05908203125, -0.1025390625, -0.107421875, -0.04931640625, 0.056640625, 0.15966796875, 0.20263671875, 0.15966796875, 0.056640625, -0.04931640625, -0.107421875, -0.1025390625, -0.05908203125, -0.0146484375, 0.0078125, 0.00830078125, 0.0, -0.00439453125, -0.001953125, 0.001953125, 0.00390625, 0.00390625, 0.00244140625];
+b2 = fir1(32, [.1 .3]);
+
+quantizationError = sum((b - b2).^2)
+
+% Just trying out filter implementation
+buff = zeros(1,33);
+bp2Data = zeros(1,length(data));
+for i = 1:length(data)
+   buff = circshift(buff,[0 1]);
+   buff(1) = data(i);
+   bp2Data(i) = sum(b.*buff);
+end
+
+bpData = filter(b2,1,data);
+figure; plot(time, bpData, time, bp2Data);
 
 %% Find peaks
 % Find max peaks
@@ -42,7 +58,7 @@ bpData = filter(b,1,data);
 [minPeaks, minLocations] = findpeaks(-bpData);
 
 %% Find peak height/time distances
-% Find max-min pair distances
+% Find min-max pair distances
 len = min(length(maxPeaks), length(minPeaks));
 peakDist = maxPeaks(1:len) + minPeaks(1:len);
 
@@ -53,16 +69,17 @@ locDist = maxLocations(1:len) - minLocations(1:len);
 % Actual steps
 stepIndeces = (peakDist > .3);
 stepPeakDist = peakDist .* stepIndeces;
-stepPeakDist(stepPeakDist==0) = []; % remove 0's
+stepPeakDist(stepIndeces==0) = []; % remove 0's
 
 % Non-steps
 nonStepPeak = peakDist .* (1-stepIndeces);
 nonStepPeak(nonStepPeak==0) = []; % remove 0's
 
 % Theshold is distance between two distributions
-% Simply take midpoint between two groupings
-% Comes out to about .3 anyway so I'll use that
-threshold = (mean(stepPeakDist) - mean(nonStepPeak)) / 2;
+% Simply take midpoint between two wieghted groupings
+probStepPeak = sum(stepIndeces) / length(stepIndeces)
+probNonStepPeak = 1-probStepPeak
+threshold = (mean(stepPeakDist)*probStepPeak - mean(nonStepPeak)*probNonStepPeak) / 2
 
 %% Find good window size to search for min/max pairs
 
@@ -72,13 +89,13 @@ locDist(stepIndeces==0) = [];
 lowerWindowBound = 3 % see comments earlier
 upperWindowBound = max(locDist)
 
-maxLocations(stepIndeces~=0)
-
 %% Plots
 
 % Plot peak distance
 figure; subplot(2,1,1);
-stem(time(maxLocations(1:len)), peakDist);
+stem(time(maxLocations(stepIndeces==1)), peakDist(stepIndeces==1), 'bo'); % steps
+hold on;
+stem(time(maxLocations(stepIndeces==0)), peakDist(stepIndeces==0), 'ro'); % non-steps
 hold on; plot(time, threshold);
 title(['min-max peak pair distance, ', num2str(threshold)]); xlabel('sec');
 subplot(2,1,2);
