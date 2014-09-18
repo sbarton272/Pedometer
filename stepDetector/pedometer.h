@@ -25,7 +25,7 @@
 
 const char SPLIT_TOK[2] = ",";
 
-#define DATA_BUFF_SIZE 32
+#define DATA_BUFF_SIZE 64
 #define NUM_ACCEL_DATA 3
 
 /*==================================

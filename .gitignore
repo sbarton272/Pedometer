@@ -33,3 +33,6 @@
 
 #Sublime files
 *.json
+
+#Vim files
+*.swp

@@ -78,12 +78,12 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
     linesRead++;
   }
 
-  // if (feof(fp)) {
-  //   // Hit end of file
-  //   return;
-  // } else {
-  //   // Error
-  //   printf("Error parsing data\n");
-  // }
+  if (feof(fp)) {
+    // Hit end of file
+    return;
+  } else {
+    // Error
+    printf("Error parsing data\n");
+  }
 }
 
