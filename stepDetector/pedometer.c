@@ -58,10 +58,8 @@ int main(int argc, char *argv[]) {
 
 void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
 
-  char x[64];
-  char y[DATA_BUFF_SIZE];
-  char z[DATA_BUFF_SIZE];
-  char* buf;
+  char buf[DATA_BUFF_SIZE];
+  char* parse;
   char* tok;
 
   // Read line by line and parse x, y, z values
@@ -69,10 +67,10 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
   // NOTE I removed the header in my data file
 
   int linesRead = 0;
-  while ((fscanf(fp, "%s", x) == 1) &&
+  while ((fscanf(fp, "%s", buf) == 1) &&
          (linesRead < nSamples)) {
-    buf = x;
-    while ((tok = strsep(&buf, ",")) != NULL) {
+    parse = buf;
+    while ((tok = strsep(&parse, ",")) != NULL) {
       printf("%d:%s\n", linesRead, tok);
     }
     linesRead++;
