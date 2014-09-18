@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <string.h>
 
 #include "stepDetector.h"
 #include "fixedPt.h"

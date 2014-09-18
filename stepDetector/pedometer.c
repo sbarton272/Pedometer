@@ -20,7 +20,7 @@
 int main(int argc, char *argv[]) {
 
   // Check input, want data filename and num sampels
-  if (argc != 2) {
+  if (argc != 3) {
     printf("Please provide data file name\npedometer <filename> <nSamples>\n");
     exit(EXIT_FAILURE);
   }
@@ -58,26 +58,32 @@ int main(int argc, char *argv[]) {
 
 void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
 
-  char x[DATA_BUFF_SIZE];
+  char x[64];
   char y[DATA_BUFF_SIZE];
   char z[DATA_BUFF_SIZE];
+  char* buf;
+  char* tok;
 
   // Read line by line and parse x, y, z values
   // Assume there is no first line header
   // NOTE I removed the header in my data file
+
   int linesRead = 0;
-  while ((fscanf(fp, "%s,%s,%s", x,y,z) == 1) &&
+  while ((fscanf(fp, "%s", x) == 1) &&
          (linesRead < nSamples)) {
-    printf("%s:%s:%s\n", x,y,z);
+    buf = x;
+    while ((tok = strsep(&buf, ",")) != NULL) {
+      printf("%d:%s\n", linesRead, tok);
+    }
     linesRead++;
   }
 
-  if (feof(fp)) {
-    // Hit end of file
-    return;
-  } else {
-      // Error
-      printf("Error parsing data\n");
-  }
+  // if (feof(fp)) {
+  //   // Hit end of file
+  //   return;
+  // } else {
+  //   // Error
+  //   printf("Error parsing data\n");
+  // }
 }
 
