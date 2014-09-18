@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
   // Clean-up mallocs
   free(data);
 
+  printf("Number of steps is %d\n", nSteps);
+
 }
 
 /*==================================
@@ -83,10 +85,9 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
     tok = strsep(&parse, ",");
     data[linesRead].z = parseValue(tok);
 
-    linesRead++;
-
     printf("Read(%d) %d, %d, %d\n", linesRead, data[linesRead].x, data[linesRead].y, data[linesRead].z);
 
+    linesRead++;
   }
 
   if (feof(fp)) {

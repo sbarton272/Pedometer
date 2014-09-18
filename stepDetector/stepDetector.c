@@ -22,7 +22,26 @@ const fixed_t bandpassFilterCoef[BPF_LEN] = {5, 8, 8, 4, -4, -9, 0, 17, 16,
  *==================================*/
 
 uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen) {
-	return 0;
+	
+  // Create new data object to contained normalized value
+  fixed_t* normData = malloc(dataLen*sizeof(fixed_t));
+  uint16_t i;
+  for (i = 0; i < dataLen; i++) {
+
+    // Norm is simply sum of squares
+    normData[i] = sumSqrs(data[i]);
+  }
+
+  // Filter data with band pass filter
+  bandpassFilter(normData, dataLen);
+
+  // Count and return steps
+  uint16_t nSteps = countSteps(normData, dataLen);
+
+  // Clean-up memory
+  free(normData);
+
+  return nSteps;
 }
 
 /*==================================
@@ -30,11 +49,21 @@ uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen) {
  *==================================*/
 
 fixed_t sumSqrs(pedometer_data_t xyz) {
-	return 0;
+	return fixedMult(xyz.x, xyz.x) + fixedMult(xyz.y, xyz.y)
+      + fixedMult(xyz.z, xyz.z);
 }
 
-fixed_t* bandpassFilter(fixed_t data[], uint16_t dataLen) {
-	return NULL;
+void bandpassFilter(fixed_t data[], uint16_t dataLen) {
+	
+  // Init past value buffer to 0, this is effectively zero padding the data
+  fixed_t pastBuf[BPF_LEN] = {0};
+
+  // Keep track of buffer index which rotates through buffer
+  uint16_t bufIndex = 0;
+
+  // TODO make loop and multiply
+
+  return;
 }
 
 uint16_t countSteps(fixed_t data[], uint16_t dataLen) {

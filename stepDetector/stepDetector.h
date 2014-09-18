@@ -21,8 +21,10 @@
  * Includes
  *==================================*/
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+
 
 #include "fixedPt.h"
 
@@ -62,14 +64,16 @@ uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen);
  *==================================*/
 
 /*
- * Take the sum of the squares of the x,y,z components
+ * Take the sum of the squares of the x,y,z components.
+ * This is the twoNorm^2
  */
 static fixed_t sumSqrs(pedometer_data_t xyz);
 
 /*
- * Apply the predetermined bandpass filter to the data
+ * Apply the predetermined bandpass filter to the data.
+ * NOTE This destructively modifies data.
  */
-static fixed_t* bandpassFilter(fixed_t data[], uint16_t dataLen);
+static void bandpassFilter(fixed_t data[], uint16_t dataLen);
 
 /*
  * Iterates through filtered data and finds min-max pairs (aka a minimum
@@ -78,8 +82,14 @@ static fixed_t* bandpassFilter(fixed_t data[], uint16_t dataLen);
  */
 static uint16_t countSteps(fixed_t data[], uint16_t dataLen);
 
+/*
+ * Take min of given numbers
+ */
 static fixed_t min(fixed_t nums[], uint16_t len);
 
+/*
+ * Take max of given numbers
+ */
 static fixed_t max(fixed_t nums[], uint16_t len);
 
 
