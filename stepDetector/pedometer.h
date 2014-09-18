@@ -11,19 +11,21 @@
  * Includes
  *==================================*/
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+
 #include "stepDetector.h"
+#include "fixedPt.h"
 
 /*==================================
  * Macros and Consts
  *==================================*/
 
-const char* SPLIT_TOK = ",";
-const char* SCAN_XYZ = "%";
+const char SPLIT_TOK[2] = ",";
 
-#define READ_BUFF_SIZE 256;
-#define NUM_ACCEL_DATA 3;
+#define DATA_BUFF_SIZE 32
+#define NUM_ACCEL_DATA 3
 
 /*==================================
  * Structs
@@ -42,5 +44,7 @@ int main(int argc, char *argv[]);
 /*==================================
  * Private
  *==================================*/
+
+static void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples);
 
 #endif // _PEDOMETER_H

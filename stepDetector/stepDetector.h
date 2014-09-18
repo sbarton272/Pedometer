@@ -21,7 +21,10 @@
  * Includes
  *==================================*/
 
+#include <stdio.h>
 #include <inttypes.h>
+
+#include "fixedPt.h"
 
 /*==================================
  * Macros
@@ -33,9 +36,7 @@
  * Constants
  *==================================*/
 
-const fixed_t[BPF_LEN] bandpassFilerCoef = {5, 8, 8, 4, -4, -9, 0, 17, 16,
-	-30, -121, -210, -220, -101, 116, 327, 415, 327, 116, -101, -220, 
-	-210, -121, -30, 16, 17, 0, -9, -4, 4, 8, 8, 5};
+extern const fixed_t bandpassFilterCoef[BPF_LEN];
 
 /*==================================
  * Structs
@@ -54,7 +55,7 @@ typedef struct {
 /*
  * Given data 
  */
-uint16_t stepDetector(pedometer_data_t[] data, uint16_t dataLen);
+uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen);
 
 /*==================================
  * Private
@@ -68,18 +69,18 @@ static fixed_t sumSqrs(pedometer_data_t xyz);
 /*
  * Apply the predetermined bandpass filter to the data
  */
-static fixed_t[] bandpassFilter(fixed_t[] data, uint16_t dataLen);
+static fixed_t* bandpassFilter(fixed_t data[], uint16_t dataLen);
 
 /*
  * Iterates through filtered data and finds min-max pairs (aka a minimum
  *  followed by a maximum). If these extrema have a large enough difference
  *  this is classified as a step.
  */
-static uint16_t countSteps(fixed_t[] data, uint16_t dataLen);
+static uint16_t countSteps(fixed_t data[], uint16_t dataLen);
 
-static fixed_t min(fixed_t[] nums, uint16_t len);
+static fixed_t min(fixed_t nums[], uint16_t len);
 
-static fixed_t max(fixed_t[] nums, uint16_t len);
+static fixed_t max(fixed_t nums[], uint16_t len);
 
 
 #endif // _STEP_DETECTOR_H
