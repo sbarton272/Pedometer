@@ -29,7 +29,7 @@
 #include "fixedPt.h"
 
 /*==================================
- * Macros
+ * Macros and Constants
  *==================================*/
 
 /*
@@ -52,9 +52,10 @@
  */
 #define MIN_MAX_THRESHOLD 614
 
-/*==================================
- * Constants
- *==================================*/
+/* 
+ * Gravity is 1, this value is convert to a fixed_t
+ */
+#define GRAVITY_OFFSET 2048
 
 /*
  * Coefficients calculated in matlab for an FIR filter with

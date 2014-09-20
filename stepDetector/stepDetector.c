@@ -29,16 +29,12 @@ uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen) {
   for (i = 0; i < dataLen; i++) {
 
     // Norm is simply sum of squares, do not take sqrt for precision purposes
-    normData[i] = sumSqrs(data[i]);
+    // Subtract gravity
+    normData[i] = sumSqrs(data[i]) - GRAVITY_OFFSET;
   }
 
   // Filter data with band pass filter, note modifies normData
   bandpassFilter(normData, dataLen);
-
-  // TODO remove this test
-  for (i = 0; i < dataLen; i++) {
-    printf("%d\n", normData[i]);
-  }
 
   // Count and return steps
   uint16_t nSteps = countSteps(normData, dataLen);
@@ -113,8 +109,6 @@ uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
     // If difference in min followed by max peak is large enough this is a step
     if ((max - min) > MIN_MAX_THRESHOLD) {
       if (!priorPeak) {
-        // TODO remove debug print
-        printf("Peak at %d\n", i);
         stepCount++;
       }
       priorPeak = true;
