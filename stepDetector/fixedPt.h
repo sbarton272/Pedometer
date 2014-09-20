@@ -18,12 +18,14 @@
 
 /* The fixed point location was determined in fixedPt.py
  *  to meet the contraints of the data and the filter coef.
+ *  The hope was too keep the whole data representation within
+ *  16 bits.
  */
 #define FIXED_PT_LOC 11
 
 typedef int16_t fixed_t;
 
-typedef int32_t long_fixed_t;
+typedef int32_t fixed_long_t;
 
 
 /*==================================

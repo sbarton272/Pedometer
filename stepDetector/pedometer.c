@@ -1,6 +1,7 @@
 /**
  * Main file to load data and convert it to
  *  the correct type for the algorithm
+ * NOTE I removed the header in my data file
  */
 
 /*==================================
@@ -37,6 +38,7 @@ int main(int argc, char *argv[]) {
 
   // Create data object to store data
   uint16_t nSamples = atoi(argv[2]);
+
   // Malloc may not be a good idea for embedded but neccessary since don't know
   //  nSamples until runtime.
   pedometer_data_t* data = malloc(nSamples*sizeof(pedometer_data_t));
@@ -69,7 +71,6 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
 
   // Read line by line and parse x, y, z values
   // Assume there is no first line header
-  // NOTE I removed the header in my data file
   int16_t linesRead = 0;
   while ((fscanf(fp, "%s", buf) == 1) &&
          (linesRead < nSamples)) {
@@ -117,7 +118,7 @@ fixed_t parseValue(char* tok) {
   int16_t decimalPlacesPassed = 0;
   int32_t sum = 0;
 
-  // Iterate until read given number of digits past decimal place
+  // Iterate until read given number of digits past decimal place or reach end of string
   while ( (decimalPlacesPassed <= DECIMAL_PRECISION) &&
           (c != '\n')) {
     

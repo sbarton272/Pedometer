@@ -81,7 +81,12 @@ typedef struct {
  *==================================*/
 
 /*
- * Given data 
+ * Given data find number of steps using the following algorithm:
+ * 1) Normalize x,y,z data into one value with gravity removed
+ * 2) Put data through bandpass filter
+ * 3) Search for extreema, specifically a min followed by a max within
+ *    a window size. If these extreema are far enough apart then classify
+ *    as a step.
  */
 uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen);
 
@@ -90,7 +95,7 @@ uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen);
  *==================================*/
 
 /*
- * Take the sum of the squares of the x,y,z components.
+ * Take the sum of the squares of the x, y, z components.
  * This is the twoNorm^2
  */
 static fixed_t sumSqrs(pedometer_data_t xyz);

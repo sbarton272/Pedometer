@@ -12,6 +12,7 @@
  * Constants
  *==================================*/
 
+// These have already been converted to the fixed point representation
 const fixed_t bandpassFilterCoef[BPF_LEN] = {5, 8, 8, 4, -4, -9, 0, 17, 16,
 	-30, -121, -210, -220, -101, 116, 327, 415, 327, 116, -101, -220,
 	-210, -121, -30, 16, 17, 0, -9, -4, 4, 8, 8, 5};
@@ -28,8 +29,8 @@ uint16_t stepDetector(pedometer_data_t data[], uint16_t dataLen) {
   uint16_t i;
   for (i = 0; i < dataLen; i++) {
 
-    // Norm is simply sum of squares, do not take sqrt for precision purposes
-    // Subtract gravity
+    // Norm is simply sum of squares, do not take sqrt for precision purposes and
+    //  also subtract gravity
     normData[i] = sumSqrs(data[i]) - GRAVITY_OFFSET;
   }
 
@@ -70,7 +71,7 @@ void bandpassFilter(fixed_t data[], uint16_t dataLen) {
     bufIndex = i % BPF_LEN;
     pastBuf[bufIndex] = data[i];
 
-    // Perform filter convolution on current buffer
+    // Perform filter on current buffer
     fixed_t filteredValue = 0;
     uint16_t k;
     for (j = 0; j < BPF_LEN; j++) {
@@ -79,7 +80,7 @@ void bandpassFilter(fixed_t data[], uint16_t dataLen) {
        * The bufIndex is the starting point. The pastBuf has
        * values added to the right, so iterate left from the starting
        * point to iterate through successively older values.
-       * Add BPF_LEN so that this term doesn't go negative.
+       * Add BPF_LEN so that this index doesn't go negative.
        */
       k = (BPF_LEN + bufIndex - j) % BPF_LEN;
 
@@ -100,6 +101,8 @@ uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
   fixed_t min, max;
   bool priorPeak = false;
   uint16_t stepCount = 0;
+
+  // Start part way into the data so that the window does not extend beyond the data buffer
   for (i = STEP_WINDOW_SIZE; i < (dataLen - STEP_WINDOW_SIZE); i++) {
 
     // Search for min in window before cur index and max in following window
@@ -111,8 +114,12 @@ uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
       if (!priorPeak) {
         stepCount++;
       }
+
+      // Keep track that a peak was just seen so as not to double count
       priorPeak = true;
     } else {
+
+      // Can begin looking for new peaks
       priorPeak = false;
     }
   }

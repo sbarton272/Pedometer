@@ -29,14 +29,12 @@
 const char SPLIT_TOK[2] = ",";
 
 #define DATA_BUFF_SIZE 64
+
+// X,Y,Z
 #define NUM_ACCEL_DATA 3
 
 #define INPUT_SCALAR 10000 // 10^4
 #define DECIMAL_PRECISION 4
-
-/*==================================
- * Structs
- *==================================*/
 
 /*==================================
  * Public
@@ -53,13 +51,13 @@ int main(int argc, char *argv[]);
  *==================================*/
 
 /*
- * Extract all of the values in the file and store in data
+ * Extract all of the values in the file and store in data. This expects data not to have a header line.
  */
 static void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples);
 
 /*
  * Given a float in string format, convert to fixed point type
- * NOTE modifies tok pointer and truncates instead of rounding once the precision
+ * NOTE modifies tok pointer and truncates numbers instead of rounding once the precision
  *  point is reached.
  */
 static fixed_t parseValue(char* tok);
