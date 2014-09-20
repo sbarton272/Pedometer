@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "fixedPt.h"
 
@@ -109,12 +110,12 @@ static uint16_t countSteps(fixed_t data[], uint16_t dataLen);
 /*
  * Take min of given numbers
  */
-static fixed_t min(fixed_t nums[], uint16_t len);
+static fixed_t minimum(fixed_t nums[], uint16_t len);
 
 /*
  * Take max of given numbers
  */
-static fixed_t max(fixed_t nums[], uint16_t len);
+static fixed_t maximum(fixed_t nums[], uint16_t len);
 
 
 #endif // _STEP_DETECTOR_H

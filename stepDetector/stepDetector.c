@@ -82,9 +82,10 @@ void bandpassFilter(fixed_t data[], uint16_t dataLen) {
       /*
        * The bufIndex is the starting point. The pastBuf has
        * values added to the right, so iterate left from the starting
-       * point to iterate through successively older values
+       * point to iterate through successively older values.
+       * Add BPF_LEN so that this term doesn't go negative.
        */
-      k = (bufIndex - j) % BPF_LEN;
+      k = (BPF_LEN + bufIndex - j) % BPF_LEN;
 
       // BPF coefficients are ordered new to old
       filteredValue += fixedMult(pastBuf[k], bandpassFilterCoef[j]);
@@ -106,8 +107,8 @@ uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
   for (i = STEP_WINDOW_SIZE; i < (dataLen - STEP_WINDOW_SIZE); i++) {
 
     // Search for min in window before cur index and max in following window
-    min = min(&data[i - STEP_WINDOW_SIZE], STEP_WINDOW_SIZE);
-    max = max(&data[i], STEP_WINDOW_SIZE);
+    min = minimum(&data[i - STEP_WINDOW_SIZE], STEP_WINDOW_SIZE);
+    max = maximum(&data[i], STEP_WINDOW_SIZE);
 
     // If difference in min followed by max peak is large enough this is a step
     if ((max - min) > MIN_MAX_THRESHOLD) {
@@ -124,7 +125,7 @@ uint16_t countSteps(fixed_t data[], uint16_t dataLen) {
   return stepCount;
 }
 
-fixed_t min(fixed_t nums[], uint16_t len) {
+fixed_t minimum(fixed_t nums[], uint16_t len) {
 
   // Iter through to find min
   uint16_t i;
@@ -137,7 +138,7 @@ fixed_t min(fixed_t nums[], uint16_t len) {
   return min;
 }
 
-fixed_t max(fixed_t nums[], uint16_t len) {
+fixed_t maximum(fixed_t nums[], uint16_t len) {
  
   // Iter through to find max
   uint16_t i;

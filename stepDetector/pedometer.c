@@ -85,8 +85,6 @@ void parseXyzData(FILE* fp, pedometer_data_t data[], uint16_t nSamples) {
     tok = strsep(&parse, ",");
     data[linesRead].z = parseValue(tok);
 
-    printf("Read(%d) %d, %d, %d\n", linesRead, data[linesRead].x, data[linesRead].y, data[linesRead].z);
-
     linesRead++;
   }
 
